@@ -13,8 +13,13 @@
                 <span class="font-medium text-slate-800">Verifikasi Pendaftar</span>
                 <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">{{ $pendingCount }} menunggu</span>
             </a>
+            <a href="{{ route('admin.garages.index') }}"
+                class="mt-2 flex items-center justify-between rounded-md border border-slate-200 px-4 py-3 text-sm hover:bg-slate-50">
+                <span class="font-medium text-slate-800">Garasi</span>
+                <span class="text-xs text-slate-500">Buat garasi batch</span>
+            </a>
             <p class="mt-3 text-sm text-slate-500">
-                Menu pembuatan garasi, perpanjangan sewa, dan laporan akan tersedia di tahap berikutnya.
+                Menu perpanjangan sewa dan laporan akan tersedia di tahap berikutnya.
             </p>
         </div>
     @else

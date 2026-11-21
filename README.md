@@ -26,7 +26,7 @@ Akun admin awal: `admin@garasi.test` / `12345678` (ganti setelah login pertama).
 |---|---|
 | `app/Enums` | Enum tipe/status (UserRole, RenterStatus, GarageType, VehicleType, InvoiceType, dst.) |
 | `app/Models` | User, Renter, Garage, Vehicle, Rental, Invoice |
-| `app/Services` | Logika bisnis (kalkulasi harga, generate ID garasi, validasi) — Checkpoint 2–4 |
+| `app/Services` | Logika bisnis: `RenterRegistrationService`, `GarageIdGenerator`, `GarageBatchService`. Kalkulasi harga dan validasi sewa menyusul (Checkpoint 3) |
 | `database/migrations` | Skema tabel sesuai ERD V2 (`user`, `renter`, `garage`, `vehicle`, `rental`, `invoice`) |
 | `docs/diagram` | Use Case Diagram, ERD V2 (PNG), dan `class.puml` |
 | `docs/checklist_kesiapan_pengumpulan.md` | Checklist kesiapan pengumpulan |
@@ -41,10 +41,10 @@ Akun admin awal: `admin@garasi.test` / `12345678` (ganti setelah login pertama).
 
 ## Progres
 - [x] Checkpoint 1 — Perancangan sistem & basis data
-- [ ] Checkpoint 2 — Login, registrasi, verifikasi pendaftar, pembuatan garasi batch
+- [x] Checkpoint 2 — Login, registrasi, verifikasi pendaftar, pembuatan garasi batch
   - [x] Registrasi penyewa (status awal Pending) dan login/logout
   - [x] Verifikasi pendaftar oleh Admin (terima/tolak, hanya Admin)
-  - [ ] Pembuatan garasi batch (ID otomatis)
+  - [x] Pembuatan garasi batch (ID otomatis `S001`/`C001`/`E001`, maks. 999 per tipe)
 - [ ] Checkpoint 3 — Sewa baru dan perpanjangan sewa
 - [ ] Checkpoint 4 — Laporan, unit testing, dokumentasi
 - [ ] Checkpoint 5 — Final review dan persiapan demo

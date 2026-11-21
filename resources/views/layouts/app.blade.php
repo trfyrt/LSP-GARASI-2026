@@ -22,6 +22,10 @@
                                 class="{{ request()->routeIs('admin.renters.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
                                 Verifikasi Pendaftar
                             </a>
+                            <a href="{{ route('admin.garages.index') }}"
+                                class="{{ request()->routeIs('admin.garages.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
+                                Garasi
+                            </a>
                         @endif
                     </nav>
 

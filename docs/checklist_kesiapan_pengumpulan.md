@@ -39,9 +39,9 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 - [ ] Logout dan proteksi halaman per role (Admin vs Penyewa)
 
 ### B. Modul Admin
-- [ ] Buat garasi batch per tipe (Sepeda / Mobil / Mobil Listrik), maksimal 999 per tipe
-- [ ] ID garasi otomatis & incremental per tipe (`S001`, `C001`, `E001`), lanjut dari nomor terakhir
-- [ ] Harga sewa harian per tipe; harga isi listrik per kWh khusus tipe Mobil Listrik
+- [x] Buat garasi batch per tipe (Sepeda / Mobil / Mobil Listrik), maksimal 999 per tipe
+- [x] ID garasi otomatis & incremental per tipe (`S001`, `C001`, `E001`), lanjut dari nomor terakhir
+- [x] Harga sewa harian per tipe; harga isi listrik per kWh khusus tipe Mobil Listrik
 - [x] Verifikasi pendaftar: daftar + data NIK, aksi Terima / Tolak
 - [ ] Perpanjang sewa: daftar garasi `used` hari ini, ubah tanggal selesai
 - [ ] Perpanjang sewa: sisa biaya tambahan terhitung otomatis
@@ -86,7 +86,7 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 ## 6. Unit Testing
 
 - [ ] Test kalkulasi harga (harian, bulanan, listrik)
-- [ ] Test generate ID garasi (urutan, padding 3 digit, per tipe, batas 999)
+- [x] Test generate ID garasi (urutan, padding 3 digit, per tipe, batas 999)
 - [ ] Test validasi sewa (maks hari, kompatibilitas kendaraan–garasi, plat wajib)
 - [ ] `php artisan test` hijau seluruhnya
 - [x] Contoh test bawaan (`ExampleTest`) dibersihkan atau tetap lolos

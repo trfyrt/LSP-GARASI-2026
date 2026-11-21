@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\GarageController;
 use App\Http\Controllers\Admin\RenterVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -25,5 +26,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/renters', [RenterVerificationController::class, 'index'])->name('renters.index');
         Route::post('/renters/{renter}/approve', [RenterVerificationController::class, 'approve'])->name('renters.approve');
         Route::post('/renters/{renter}/reject', [RenterVerificationController::class, 'reject'])->name('renters.reject');
+
+        Route::get('/garages', [GarageController::class, 'index'])->name('garages.index');
+        Route::post('/garages', [GarageController::class, 'store'])->name('garages.store');
     });
 });

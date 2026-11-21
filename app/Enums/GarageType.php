@@ -11,6 +11,22 @@ enum GarageType: string
     case Car = 'CAR';
     case ElectricCar = 'EV';
 
+    /** Nama tampilan tipe garasi. */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Bike => 'Garasi Sepeda',
+            self::Car => 'Garasi Mobil',
+            self::ElectricCar => 'Garasi Mobil Listrik',
+        };
+    }
+
+    /** Harga isi listrik per kWh hanya berlaku untuk garasi mobil listrik. */
+    public function requiresChargingPrice(): bool
+    {
+        return $this === self::ElectricCar;
+    }
+
     /** Awalan huruf pada kode garasi. */
     public function prefix(): string
     {
