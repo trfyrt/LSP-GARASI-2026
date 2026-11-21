@@ -7,6 +7,6 @@ namespace App\Enums;
  */
 enum RentalType: string
 {
-    case Daily = 'daily';
-    case Monthly = 'monthly';
+    case Daily = 'DAILY';
+    case Monthly = 'MONTHLY';
 }

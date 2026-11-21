@@ -3,24 +3,27 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 /**
- * Pengguna sistem: Admin atau Penyewa (email dipakai sebagai username).
+ * Akun login sistem: Admin atau Penyewa (email dipakai sebagai username).
+ * Data khusus penyewa ada di {@see Renter}.
  */
-#[Fillable(['nik', 'name', 'phone', 'email', 'password', 'role', 'status'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
+#[Hidden(['password'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'user';
+
+    public $timestamps = false;
 
     /**
      * Get the attributes that should be cast.
@@ -32,20 +35,19 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'role' => UserRole::class,
-            'status' => UserStatus::class,
         ];
     }
 
-    /** Kendaraan milik penyewa. */
-    public function vehicles(): HasMany
+    /** Tabel `user` tidak punya kolom remember_token, jadi fitur "ingat saya" dimatikan. */
+    public function getRememberTokenName(): string
     {
-        return $this->hasMany(Vehicle::class);
+        return '';
     }
 
-    /** Transaksi sewa milik penyewa. */
-    public function rentals(): HasMany
+    /** Profil penyewa (hanya ada untuk role Renter). */
+    public function renter(): HasOne
     {
-        return $this->hasMany(Rental::class);
+        return $this->hasOne(Renter::class, 'id_user');
     }
 
     public function isAdmin(): bool
@@ -56,6 +58,6 @@ class User extends Authenticatable
     /** Hanya penyewa berstatus Approved yang dapat menyewa. */
     public function canRent(): bool
     {
-        return $this->role === UserRole::Renter && $this->status === UserStatus::Approved;
+        return $this->renter?->canRent() ?? false;
     }
 }

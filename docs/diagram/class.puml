@@ -1,141 +1,126 @@
 @startuml class
 title Class Diagram - Sistem Penyewaan Garasi Kendaraan
+caption Tipe "?" = boleh kosong (nullable). Nama atribut sama dengan kolom tabel pada ERD V2.
+
 skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  HeaderBackgroundColor #DCE9FB
+  BorderColor #1F2A44
+  ArrowColor #1F2A44
+}
+hide circle
+hide empty members
 
-package "Enums" {
-  enum UserRole {
-    Admin
-    Renter
-  }
-  enum UserStatus {
-    Pending
-    Approved
-    Rejected
-  }
-  enum GarageType {
-    Bike
-    Car
-    ElectricCar
-    +prefix(): string
-    +allowedVehicleTypes(): VehicleType[]
-  }
-  enum GarageStatus {
-    Available
-    Used
-  }
-  enum VehicleType {
-    Bicycle
-    Motorcycle
-    Car
-    ElectricCar
-    +requiresPlate(): bool
-    +requiresBattery(): bool
-  }
-  enum RentalType {
-    Daily
-    Monthly
-  }
-  enum InvoiceType {
-    Initial
-    Extension
-  }
+class User {
+  - id: int
+  - name: string
+  - email: string {unique}
+  - password: string
+  - role: UserRole
+  --
+  + isAdmin(): boolean
+  + canRent(): boolean
 }
 
-package "Models" {
-  class User {
-    -id: int
-    -nik: string
-    -name: string
-    -phone: string
-    -email: string
-    -password: string
-    -role: UserRole
-    -status: UserStatus
-    +isAdmin(): bool
-    +canRent(): bool
-  }
-  class Garage {
-    -id: int
-    -code: string
-    -type: GarageType
-    -dailyPrice: int
-    -chargingPricePerKwh: int
-    -status: GarageStatus
-  }
-  class Vehicle {
-    -id: int
-    -type: VehicleType
-    -plateNumber: string
-    -brand: string
-    -model: string
-    -batteryKwh: decimal
-  }
-  class Rental {
-    -id: int
-    -rentalType: RentalType
-    +startDate(): date
-    +endDate(): date
-    +totalPaid(): int
-  }
-  class Invoice {
-    -id: int
-    -type: InvoiceType
-    -startDate: date
-    -endDate: date
-    -durationDays: int
-    -rentFee: int
-    -chargingFee: int
-    -totalFee: int
-    -paymentProofPath: string
-  }
+class Renter {
+  - id: int
+  - id_user: int {unique}
+  - phone_number: string
+  - status: RenterStatus
+  - nik: string {16 digit}
+  --
+  + verify(accept: boolean): void
+  + canRent(): boolean
 }
 
-package "Services (Checkpoint 2-4)" {
-  class GarageIdGenerator {
-    +nextCodes(type: GarageType, count: int): string[]
-  }
-  class RentalPriceCalculator {
-    +maxDailyDuration(date: Date): int
-    +rentFee(type: RentalType, days: int, dailyPrice: int): int
-    +chargingFee(kwh: decimal, pricePerKwh: int): int
-    +extensionFee(garage: Garage, extraDays: int): int
-  }
-  class RentalValidator {
-    +validateDuration(type: RentalType, days: int, date: Date): void
-    +validateCompatibility(vehicle: Vehicle, garage: Garage): void
-    +validateGarageAvailable(garage: Garage): void
-  }
-  class RentalService {
-    +create(renter: User, data: array): Rental  ' membuat Rental + Invoice initial
-    +extend(rental: Rental, admin: User, newEnd: Date, proof: File): Invoice  ' invoice baru, garasi sama dengan rental
-  }
-  class ReportService {
-    +byMonth(year: int)
-    +byDay(year: int, month: int)
-    +byGarageType(type: GarageType)
-    +byRenter(renter: User)
-  }
+class Vehicle {
+  - id: int
+  - id_renter: int
+  - vehicle_type: VehicleType
+  - plate_number: string?
+  - brand_model: string
+  - battery_kwh: decimal?
+  --
+  + canBeParkedIn(type: GarageType): boolean
 }
 
-User "1" -- "0..*" Vehicle : memiliki
-User "1" -- "0..*" Rental : menyewa
-Garage "1" -- "0..*" Rental : disewa dalam
-Vehicle "1" -- "0..*" Rental : menempati
-Rental "1" -- "1..*" Invoice : ditagih
-User "0..1" -- "0..*" Invoice : diproses admin
+class Rental {
+  - id: int
+  - id_renter: int
+  - id_garage: int
+  - id_vehicle: int
+  - rental_type: RentalType
+}
 
-User ..> UserRole
-User ..> UserStatus
-Garage ..> GarageType
-Garage ..> GarageStatus
-Vehicle ..> VehicleType
-Rental ..> RentalType
-Invoice ..> InvoiceType
+class Garage {
+  - id: int
+  - code: string {S|C|E + 3 digit}
+  - type: GarageType
+  - daily_price: int
+  - charging_price: int?
+  - status: GarageStatus
+  --
+  + isAvailable(): boolean
+}
 
-RentalService ..> RentalPriceCalculator
-RentalService ..> RentalValidator
-RentalService ..> Rental
-RentalService ..> Invoice
-GarageIdGenerator ..> Garage
-ReportService ..> Invoice
+class Invoice {
+  - id: int
+  - id_rental: int
+  - type: InvoiceType
+  - start_date: Date
+  - end_date: Date
+  - duration_days: int
+  - rent_fee: int
+  - charging_fee: int
+  - total_fee: int
+  - payment_proof_path: string
+}
+
+class "Daftar Enum" as Enums <<enumeration>> #FFF4CC {
+  UserRole: ADMIN | RENTER
+  RenterStatus: PENDING | APPROVED | REJECTED
+  VehicleType: BIKE | MOTORCYCLE | CAR | EV
+  GarageType: BIKE (S) | CAR (C) | EV (E)
+  GarageStatus: AVAILABLE | USED
+  RentalType: DAILY | MONTHLY
+  InvoiceType: INITIAL | EXTENSION
+  --
+  VehicleType: requiresPlate(), requiresBattery()
+  GarageType: prefix(), allowedVehicleTypes()
+}
+
+User "1" -right- "0..1" Renter : has profile
+Renter "1" -right- "0..*" Vehicle : owns
+Renter "1" -down- "0..*" Rental : rents
+Vehicle "1" -down- "0..*" Rental : used in
+Rental "0..*" -right- "1" Garage : rented
+Rental "1" *-down- "1..*" Invoice : billed through
+
+Invoice -[hidden]right- Enums
+
+note as Notes
+  <b>Catatan</b>
+  - Registrasi membuat 1 User (role RENTER) + 1 Renter
+    (status PENDING) dalam satu transaksi.
+  - Admin hanya punya User, tanpa Renter.
+  - Renter.canRent() dan User.canRent(): status APPROVED.
+  - Sewa baru membuat 1 Rental + 1 Invoice (INITIAL).
+  - Perpanjangan: Invoice baru (EXTENSION) untuk garasi yang
+    sama dengan Rental. Tidak ada tabel perpanjangan.
+  - Tanggal mulai/selesai dan semua biaya disimpan di Invoice;
+    Rental hanya menghubungkan Renter, Garage, dan Vehicle.
+  - Vehicle.canBeParkedIn(): BIKE, MOTORCYCLE -> S | CAR -> C |
+    EV -> C atau E. Plat wajib kecuali BIKE.
+  - Biaya listrik = battery_kwh x charging_price
+    (hanya EV di garasi E).
+  - Sewa bulanan = 25 x daily_price. Sewa harian maksimal
+    jumlah hari bulan berjalan - 1.
+  - Method Checkpoint 2-4 (login, register, buat garasi batch,
+    hitung biaya, perpanjang, laporan) ditambahkan setelah dibuat.
+end note
+Vehicle -[hidden]down- Notes
 @enduml

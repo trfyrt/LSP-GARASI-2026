@@ -7,6 +7,6 @@ namespace App\Enums;
  */
 enum GarageStatus: string
 {
-    case Available = 'available';
-    case Used = 'used';
+    case Available = 'AVAILABLE';
+    case Used = 'USED';
 }

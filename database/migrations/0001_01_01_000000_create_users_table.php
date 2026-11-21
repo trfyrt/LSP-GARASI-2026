@@ -7,21 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Tabel `user` hanya berisi data akun login (Admin dan Penyewa).
+     * Data khusus penyewa (NIK, telepon, status) ada di tabel `renter`.
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('nik', 16)->nullable()->unique();
-            $table->string('name');
-            $table->string('phone', 20)->nullable();
+        Schema::create('user', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 100);
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'renter'])->default('renter');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->enum('role', ['ADMIN', 'RENTER']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -32,7 +28,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->unsignedInteger('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -40,13 +36,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('user');
     }
 };

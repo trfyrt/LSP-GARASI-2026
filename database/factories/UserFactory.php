@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
@@ -25,22 +25,16 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'nik' => fake()->unique()->numerify('################'),
             'name' => fake()->name(),
-            'phone' => fake()->numerify('08##########'),
             'email' => fake()->unique()->safeEmail(),
-            'role' => 'renter',
-            'status' => 'approved',
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'role' => UserRole::Renter,
         ];
     }
 
-    /**
-     * Akun penyewa yang belum diverifikasi Admin.
-     */
-    public function pending(): static
+    /** Akun Admin (tanpa profil penyewa). */
+    public function admin(): static
     {
-        return $this->state(fn (array $attributes) => ['status' => 'pending']);
+        return $this->state(fn (array $attributes) => ['role' => UserRole::Admin]);
     }
 }

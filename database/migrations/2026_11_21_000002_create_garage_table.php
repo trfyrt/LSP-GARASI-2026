@@ -8,24 +8,22 @@ return new class extends Migration
 {
     /**
      * Garasi dibuat batch oleh Admin; kode: S###, C###, E###.
+     * `charging_price` (harga isi listrik per kWh) hanya untuk garasi mobil listrik.
      */
     public function up(): void
     {
-        Schema::create('garages', function (Blueprint $table) {
-            $table->id();
+        Schema::create('garage', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('code', 4)->unique();
-            $table->enum('type', ['bike', 'car', 'electric_car']);
+            $table->enum('type', ['BIKE', 'CAR', 'EV']);
             $table->unsignedInteger('daily_price');
-            $table->unsignedInteger('charging_price_per_kwh')->nullable();
-            $table->enum('status', ['available', 'used'])->default('available');
-            $table->timestamps();
-
-            $table->index(['type', 'status']);
+            $table->unsignedInteger('charging_price')->nullable();
+            $table->enum('status', ['AVAILABLE', 'USED']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('garages');
+        Schema::dropIfExists('garage');
     }
 };

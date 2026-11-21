@@ -9,41 +9,41 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Transaksi sewa garasi beserta rincian biaya dan bukti bayar.
+ * Kontrak sewa yang menghubungkan penyewa, garasi, dan kendaraan.
+ * Tanggal dan biaya ada pada {@see Invoice}.
  */
-#[Fillable([
-    'user_id', 'garage_id', 'vehicle_id', 'rental_type', 'duration_days',
-    'start_date', 'end_date', 'rent_fee', 'charging_fee', 'total_fee', 'payment_proof_path',
-])]
+#[Fillable(['id_renter', 'id_garage', 'id_vehicle', 'rental_type'])]
 class Rental extends Model
 {
+    protected $table = 'rental';
+
+    public $timestamps = false;
+
     protected function casts(): array
     {
         return [
             'rental_type' => RentalType::class,
-            'start_date' => 'date',
-            'end_date' => 'date',
         ];
     }
 
-    public function user(): BelongsTo
+    public function renter(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Renter::class, 'id_renter');
     }
 
     public function garage(): BelongsTo
     {
-        return $this->belongsTo(Garage::class);
+        return $this->belongsTo(Garage::class, 'id_garage');
     }
 
     public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->belongsTo(Vehicle::class, 'id_vehicle');
     }
 
-    /** Riwayat perpanjangan sewa. */
-    public function extensions(): HasMany
+    /** Invoice sewa awal dan perpanjangan. */
+    public function invoices(): HasMany
     {
-        return $this->hasMany(RentalExtension::class);
+        return $this->hasMany(Invoice::class, 'id_rental');
     }
 }

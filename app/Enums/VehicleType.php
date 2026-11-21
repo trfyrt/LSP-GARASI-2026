@@ -7,15 +7,15 @@ namespace App\Enums;
  */
 enum VehicleType: string
 {
-    case Bicycle = 'bicycle';
-    case Motorcycle = 'motorcycle';
-    case Car = 'car';
-    case ElectricCar = 'electric_car';
+    case Bike = 'BIKE';
+    case Motorcycle = 'MOTORCYCLE';
+    case Car = 'CAR';
+    case ElectricCar = 'EV';
 
-    /** Nomor plat wajib kecuali sepeda. */
+    /** Nomor plat wajib kecuali sepeda (Bike). */
     public function requiresPlate(): bool
     {
-        return $this !== self::Bicycle;
+        return $this !== self::Bike;
     }
 
     /** Kapasitas baterai (kWh) hanya untuk mobil listrik. */

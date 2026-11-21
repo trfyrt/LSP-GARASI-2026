@@ -7,9 +7,9 @@ namespace App\Enums;
  */
 enum GarageType: string
 {
-    case Bike = 'bike';
-    case Car = 'car';
-    case ElectricCar = 'electric_car';
+    case Bike = 'BIKE';
+    case Car = 'CAR';
+    case ElectricCar = 'EV';
 
     /** Awalan huruf pada kode garasi. */
     public function prefix(): string
@@ -25,7 +25,7 @@ enum GarageType: string
     public function allowedVehicleTypes(): array
     {
         return match ($this) {
-            self::Bike => [VehicleType::Bicycle, VehicleType::Motorcycle],
+            self::Bike => [VehicleType::Bike, VehicleType::Motorcycle],
             self::Car => [VehicleType::Car, VehicleType::ElectricCar],
             self::ElectricCar => [VehicleType::ElectricCar],
         };
