@@ -1,0 +1,141 @@
+@startuml class
+title Class Diagram - Sistem Penyewaan Garasi Kendaraan
+skinparam classAttributeIconSize 0
+
+package "Enums" {
+  enum UserRole {
+    Admin
+    Renter
+  }
+  enum UserStatus {
+    Pending
+    Approved
+    Rejected
+  }
+  enum GarageType {
+    Bike
+    Car
+    ElectricCar
+    +prefix(): string
+    +allowedVehicleTypes(): VehicleType[]
+  }
+  enum GarageStatus {
+    Available
+    Used
+  }
+  enum VehicleType {
+    Bicycle
+    Motorcycle
+    Car
+    ElectricCar
+    +requiresPlate(): bool
+    +requiresBattery(): bool
+  }
+  enum RentalType {
+    Daily
+    Monthly
+  }
+  enum InvoiceType {
+    Initial
+    Extension
+  }
+}
+
+package "Models" {
+  class User {
+    -id: int
+    -nik: string
+    -name: string
+    -phone: string
+    -email: string
+    -password: string
+    -role: UserRole
+    -status: UserStatus
+    +isAdmin(): bool
+    +canRent(): bool
+  }
+  class Garage {
+    -id: int
+    -code: string
+    -type: GarageType
+    -dailyPrice: int
+    -chargingPricePerKwh: int
+    -status: GarageStatus
+  }
+  class Vehicle {
+    -id: int
+    -type: VehicleType
+    -plateNumber: string
+    -brand: string
+    -model: string
+    -batteryKwh: decimal
+  }
+  class Rental {
+    -id: int
+    -rentalType: RentalType
+    +startDate(): date
+    +endDate(): date
+    +totalPaid(): int
+  }
+  class Invoice {
+    -id: int
+    -type: InvoiceType
+    -startDate: date
+    -endDate: date
+    -durationDays: int
+    -rentFee: int
+    -chargingFee: int
+    -totalFee: int
+    -paymentProofPath: string
+  }
+}
+
+package "Services (Checkpoint 2-4)" {
+  class GarageIdGenerator {
+    +nextCodes(type: GarageType, count: int): string[]
+  }
+  class RentalPriceCalculator {
+    +maxDailyDuration(date: Date): int
+    +rentFee(type: RentalType, days: int, dailyPrice: int): int
+    +chargingFee(kwh: decimal, pricePerKwh: int): int
+    +extensionFee(garage: Garage, extraDays: int): int
+  }
+  class RentalValidator {
+    +validateDuration(type: RentalType, days: int, date: Date): void
+    +validateCompatibility(vehicle: Vehicle, garage: Garage): void
+    +validateGarageAvailable(garage: Garage): void
+  }
+  class RentalService {
+    +create(renter: User, data: array): Rental  ' membuat Rental + Invoice initial
+    +extend(rental: Rental, admin: User, newEnd: Date, proof: File): Invoice  ' invoice baru, garasi sama dengan rental
+  }
+  class ReportService {
+    +byMonth(year: int)
+    +byDay(year: int, month: int)
+    +byGarageType(type: GarageType)
+    +byRenter(renter: User)
+  }
+}
+
+User "1" -- "0..*" Vehicle : memiliki
+User "1" -- "0..*" Rental : menyewa
+Garage "1" -- "0..*" Rental : disewa dalam
+Vehicle "1" -- "0..*" Rental : menempati
+Rental "1" -- "1..*" Invoice : ditagih
+User "0..1" -- "0..*" Invoice : diproses admin
+
+User ..> UserRole
+User ..> UserStatus
+Garage ..> GarageType
+Garage ..> GarageStatus
+Vehicle ..> VehicleType
+Rental ..> RentalType
+Invoice ..> InvoiceType
+
+RentalService ..> RentalPriceCalculator
+RentalService ..> RentalValidator
+RentalService ..> Rental
+RentalService ..> Invoice
+GarageIdGenerator ..> Garage
+ReportService ..> Invoice
+@enduml

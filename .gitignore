@@ -1,0 +1,90 @@
+# ---------------------------------------------------------
+# Laravel
+# ---------------------------------------------------------
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+/storage/*.key
+/storage/pail
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/bootstrap/cache/*.php
+/auth.json
+
+# Environment (jangan commit kredensial; .env.example tetap di-commit)
+.env
+.env.*
+!.env.example
+
+# Test & cache
+/.phpunit.cache
+.phpunit.result.cache
+/coverage
+/.php-cs-fixer.cache
+.php_cs.cache
+.phpstan.cache
+
+# Log
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Dump database lokal (SQL ekspor boleh di docs/ bila diminta asesor)
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Homestead / Vagrant
+Homestead.json
+Homestead.yaml
+
+# ---------------------------------------------------------
+# IDE, editor & tool AI
+# ---------------------------------------------------------
+/.idea
+/.vscode
+/.nova
+/.zed
+/.cursor/
+/.codex
+.phpactor.json
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------
+# OS
+# ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# ---------------------------------------------------------
+# Docs (laporan, diagram, desain)
+# ---------------------------------------------------------
+# File sementara Microsoft Office / LibreOffice
+docs/**/~$*
+docs/**/.~lock.*#
+docs/**/*.tmp
+docs/**/*.bak
+
+# File sementara MySQL Workbench
+docs/**/*.mwb.bak
+docs/**/*.mwb.lock
+
+# Cache & hasil render sementara PlantUML / draw.io
+docs/**/*.puml.bak
+docs/**/*.drawio.bkp
+docs/**/*.dtmp
+docs/**/.$*
+
+# Sumber diagram (.puml), PNG/PDF ekspor, dan laporan akhir TETAP di-commit
+# karena menjadi deliverable.
