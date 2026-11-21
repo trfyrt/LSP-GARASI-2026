@@ -15,9 +15,11 @@ cp .env.example .env        # sesuaikan DB_* bila perlu
 php artisan key:generate
 # buat database: CREATE DATABASE garasi_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 php artisan migrate --seed
+npm install && npm run build   # aset Tailwind/Vite
 php artisan serve
 ```
-Akun admin awal: `admin@garasi.test` / `admin12345` (ganti setelah login pertama).
+Aplikasi berjalan di http://127.0.0.1:8000.
+Akun admin awal: `admin@garasi.test` / `12345678` (ganti setelah login pertama).
 
 ## Struktur
 | Path | Isi |
@@ -40,6 +42,9 @@ Akun admin awal: `admin@garasi.test` / `admin12345` (ganti setelah login pertama
 ## Progres
 - [x] Checkpoint 1 — Perancangan sistem & basis data
 - [ ] Checkpoint 2 — Login, registrasi, verifikasi pendaftar, pembuatan garasi batch
+  - [x] Registrasi penyewa (status awal Pending) dan login/logout
+  - [ ] Verifikasi pendaftar oleh Admin
+  - [ ] Pembuatan garasi batch (ID otomatis)
 - [ ] Checkpoint 3 — Sewa baru dan perpanjangan sewa
 - [ ] Checkpoint 4 — Laporan, unit testing, dokumentasi
 - [ ] Checkpoint 5 — Final review dan persiapan demo

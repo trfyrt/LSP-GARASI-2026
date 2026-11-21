@@ -21,21 +21,21 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 
 - [ ] `composer install` berhasil tanpa error
 - [ ] `cp .env.example .env` + `php artisan key:generate` berhasil
-- [ ] `php artisan migrate --seed` berhasil dari database kosong _(sudah lolos di SQLite; MySQL belum diuji)_
+- [x] `php artisan migrate --seed` berhasil dari database kosong
 - [ ] `php artisan storage:link` sudah tercantum di README dan berjalan (untuk bukti bayar)
-- [ ] `npm install && npm run build` berhasil (jika aset front-end dipakai)
-- [ ] `php artisan serve` menampilkan aplikasi tanpa error
-- [ ] Akun admin seeder berfungsi (`admin@garasi.test`) dan password sudah didokumentasikan
+- [x] `npm install && npm run build` berhasil (jika aset front-end dipakai)
+- [x] `php artisan serve` menampilkan aplikasi tanpa error
+- [x] Akun admin seeder berfungsi (`admin@garasi.test`) dan password sudah didokumentasikan
 - [ ] Tidak ada error/warning di `storage/logs/laravel.log` setelah alur utama dijalankan
 
 ## 3. Fitur Fungsional (sesuai PRD)
 
 ### A. Autentikasi & Registrasi
-- [ ] Registrasi penyewa: NIK, nama, telepon, email, password
-- [ ] Status awal akun `Pending`
-- [ ] Login Admin dan Penyewa berhasil
+- [x] Registrasi penyewa: NIK, nama, telepon, email, password
+- [x] Status awal akun `Pending`
+- [x] Login Admin dan Penyewa berhasil
 - [ ] Penyewa berstatus `Pending`/`Rejected` tidak dapat menyewa
-- [ ] Validasi input (email unik, NIK format valid, password minimal) berjalan
+- [x] Validasi input (email unik, NIK format valid, password minimal) berjalan
 - [ ] Logout dan proteksi halaman per role (Admin vs Penyewa)
 
 ### B. Modul Admin
@@ -80,7 +80,7 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 - [x] Mengikuti coding guideline (PSR-12 / Laravel Pint) — `./vendor/bin/pint --test` lolos
 - [ ] Docblock/komentar pada kelas dan method penting
 - [x] Tidak ada kode mati, `dd()`, `dump()`, atau `TODO` tersisa
-- [ ] Validasi memakai Form Request / rules, bukan di view
+- [x] Validasi memakai Form Request / rules, bukan di view
 - [x] Relasi Eloquent & foreign key sesuai ERD
 
 ## 6. Unit Testing
@@ -95,7 +95,7 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 ## 7. Basis Data
 
 - [x] Skema ternormalisasi dan sesuai ERD V2 (`docs/diagram/Entitty Relational DIagram V2.png`)
-- [ ] Migrasi dapat dijalankan ulang (`php artisan migrate:fresh --seed`) _(sudah lolos di SQLite; MySQL belum diuji)_
+- [x] Migrasi dapat dijalankan ulang (`php artisan migrate:fresh --seed`)
 - [x] Index dan constraint (unique, foreign key) terpasang
 - [ ] Dump SQL / ekspor skema disertakan bila diminta asesor (opsional)
 

@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
             ['email' => 'admin@garasi.test'],
             [
                 'name' => 'Administrator',
-                'password' => 'admin12345',
+                'password' => '12345678',
                 'role' => UserRole::Admin,
             ],
         );
