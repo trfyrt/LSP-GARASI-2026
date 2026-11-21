@@ -42,7 +42,7 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 - [ ] Buat garasi batch per tipe (Sepeda / Mobil / Mobil Listrik), maksimal 999 per tipe
 - [ ] ID garasi otomatis & incremental per tipe (`S001`, `C001`, `E001`), lanjut dari nomor terakhir
 - [ ] Harga sewa harian per tipe; harga isi listrik per kWh khusus tipe Mobil Listrik
-- [ ] Verifikasi pendaftar: daftar + data NIK, aksi Terima / Tolak
+- [x] Verifikasi pendaftar: daftar + data NIK, aksi Terima / Tolak
 - [ ] Perpanjang sewa: daftar garasi `used` hari ini, ubah tanggal selesai
 - [ ] Perpanjang sewa: sisa biaya tambahan terhitung otomatis
 - [ ] Perpanjang sewa: upload bukti pembayaran tambahan

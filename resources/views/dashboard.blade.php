@@ -8,8 +8,13 @@
     @if ($user->isAdmin())
         <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="font-medium text-slate-900">Panel Admin</h2>
-            <p class="mt-1 text-sm text-slate-600">
-                Menu verifikasi pendaftar, pembuatan garasi, perpanjangan sewa, dan laporan akan tersedia di tahap berikutnya.
+            <a href="{{ route('admin.renters.index') }}"
+                class="mt-3 flex items-center justify-between rounded-md border border-slate-200 px-4 py-3 text-sm hover:bg-slate-50">
+                <span class="font-medium text-slate-800">Verifikasi Pendaftar</span>
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">{{ $pendingCount }} menunggu</span>
+            </a>
+            <p class="mt-3 text-sm text-slate-500">
+                Menu pembuatan garasi, perpanjangan sewa, dan laporan akan tersedia di tahap berikutnya.
             </p>
         </div>
     @else

@@ -43,7 +43,7 @@ Akun admin awal: `admin@garasi.test` / `12345678` (ganti setelah login pertama).
 - [x] Checkpoint 1 — Perancangan sistem & basis data
 - [ ] Checkpoint 2 — Login, registrasi, verifikasi pendaftar, pembuatan garasi batch
   - [x] Registrasi penyewa (status awal Pending) dan login/logout
-  - [ ] Verifikasi pendaftar oleh Admin
+  - [x] Verifikasi pendaftar oleh Admin (terima/tolak, hanya Admin)
   - [ ] Pembuatan garasi batch (ID otomatis)
 - [ ] Checkpoint 3 — Sewa baru dan perpanjangan sewa
 - [ ] Checkpoint 4 — Laporan, unit testing, dokumentasi

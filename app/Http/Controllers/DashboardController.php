@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RenterStatus;
+use App\Models\Renter;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -17,6 +19,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'user' => $user,
             'renter' => $user->renter,
+            'pendingCount' => $user->isAdmin() ? Renter::where('status', RenterStatus::Pending)->count() : 0,
         ]);
     }
 }
