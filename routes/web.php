@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\GarageController;
+use App\Http\Controllers\Admin\RentalExtensionController;
 use App\Http\Controllers\Admin\RenterVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Renter\RentalController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +31,15 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/garages', [GarageController::class, 'index'])->name('garages.index');
         Route::post('/garages', [GarageController::class, 'store'])->name('garages.store');
+
+        Route::get('/extensions', [RentalExtensionController::class, 'index'])->name('extensions.index');
+        Route::get('/extensions/{rental}', [RentalExtensionController::class, 'edit'])->name('extensions.edit');
+        Route::post('/extensions/{rental}', [RentalExtensionController::class, 'update'])->name('extensions.update');
+    });
+
+    Route::middleware('renter')->group(function () {
+        Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
+        Route::get('/rentals/create', [RentalController::class, 'create'])->name('rentals.create');
+        Route::post('/rentals', [RentalController::class, 'store'])->name('rentals.store');
     });
 });

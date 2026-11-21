@@ -52,7 +52,7 @@ class RenterVerificationTest extends TestCase
 
         $response->assertSee('3201010101010001')
             ->assertSee($pending->user->name)
-            ->assertSee('Diterima')
+            ->assertSee('Terverifikasi')
             ->assertSee($approved->user->email);
     }
 

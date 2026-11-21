@@ -9,9 +9,9 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 
 ## 1. Repositori GitHub
 
-- [ ] Repositori dapat diakses asesor (public, atau asesor sudah di-invite)
+- [x] Repositori dapat diakses asesor (public, atau asesor sudah di-invite)
 - [ ] Semua perubahan sudah di-commit dan di-push ke `main` (`git status` bersih)
-- [ ] Riwayat commit rapi dan mencerminkan checkpoint 1–5
+- [x] Riwayat commit rapi dan mencerminkan checkpoint 1–5
 - [x] `.env` **tidak** ter-commit; `.env.example` lengkap dan terbaru
 - [x] Tidak ada file sampah / kredensial / folder `vendor/` dan `node_modules/` di repo
 - [x] `README.md` berisi deskripsi, stack, langkah setup, akun demo, dan progres terbaru
@@ -22,7 +22,7 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 - [ ] `composer install` berhasil tanpa error
 - [ ] `cp .env.example .env` + `php artisan key:generate` berhasil
 - [x] `php artisan migrate --seed` berhasil dari database kosong
-- [ ] `php artisan storage:link` sudah tercantum di README dan berjalan (untuk bukti bayar)
+- [x] `php artisan storage:link` sudah tercantum di README dan berjalan (untuk bukti bayar)
 - [x] `npm install && npm run build` berhasil (jika aset front-end dipakai)
 - [x] `php artisan serve` menampilkan aplikasi tanpa error
 - [x] Akun admin seeder berfungsi (`admin@garasi.test`) dan password sudah didokumentasikan
@@ -34,45 +34,45 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 - [x] Registrasi penyewa: NIK, nama, telepon, email, password
 - [x] Status awal akun `Pending`
 - [x] Login Admin dan Penyewa berhasil
-- [ ] Penyewa berstatus `Pending`/`Rejected` tidak dapat menyewa
+- [x] Penyewa berstatus `Pending`/`Rejected` tidak dapat menyewa
 - [x] Validasi input (email unik, NIK format valid, password minimal) berjalan
-- [ ] Logout dan proteksi halaman per role (Admin vs Penyewa)
+- [x] Logout dan proteksi halaman per role (Admin vs Penyewa)
 
 ### B. Modul Admin
 - [x] Buat garasi batch per tipe (Sepeda / Mobil / Mobil Listrik), maksimal 999 per tipe
 - [x] ID garasi otomatis & incremental per tipe (`S001`, `C001`, `E001`), lanjut dari nomor terakhir
 - [x] Harga sewa harian per tipe; harga isi listrik per kWh khusus tipe Mobil Listrik
 - [x] Verifikasi pendaftar: daftar + data NIK, aksi Terima / Tolak
-- [ ] Perpanjang sewa: daftar garasi `used` hari ini, ubah tanggal selesai
-- [ ] Perpanjang sewa: sisa biaya tambahan terhitung otomatis
-- [ ] Perpanjang sewa: upload bukti pembayaran tambahan
+- [x] Perpanjang sewa: daftar garasi `used` hari ini, ubah tanggal selesai
+- [x] Perpanjang sewa: sisa biaya tambahan terhitung otomatis
+- [x] Perpanjang sewa: upload bukti pembayaran tambahan
 - [ ] Laporan: filter per bulan (dalam tahun tertentu)
 - [ ] Laporan: filter per hari (dalam bulan tertentu)
 - [ ] Laporan: filter per tipe garasi
 - [ ] Laporan: filter per penyewa
 
 ### C. Modul Penyewa
-- [ ] Form sewa baru: tipe kendaraan, plat nomor, merek & tipe, kapasitas kWh (mobil listrik)
-- [ ] Plat nomor wajib kecuali Sepeda
-- [ ] Tipe garasi terfilter sesuai kompatibilitas kendaraan
-- [ ] Daftar garasi `available` hari ini sesuai tipe terpilih
-- [ ] Tanggal mulai otomatis hari ini; tanggal selesai terhitung otomatis
-- [ ] Total biaya sewa tampil (termasuk biaya listrik bila relevan)
-- [ ] Upload bukti pelunasan (gambar) dengan validasi tipe & ukuran
-- [ ] Setelah disimpan, status garasi menjadi `used`
-- [ ] Penyewa dapat menyewa lebih dari satu garasi sekaligus
+- [x] Form sewa baru: tipe kendaraan, plat nomor, merek & tipe, kapasitas kWh (mobil listrik)
+- [x] Plat nomor wajib kecuali Sepeda
+- [x] Tipe garasi terfilter sesuai kompatibilitas kendaraan
+- [x] Daftar garasi `available` hari ini sesuai tipe terpilih
+- [x] Tanggal mulai otomatis hari ini; tanggal selesai terhitung otomatis
+- [x] Total biaya sewa tampil (termasuk biaya listrik bila relevan)
+- [x] Upload bukti pelunasan (gambar) dengan validasi tipe & ukuran
+- [x] Setelah disimpan, status garasi menjadi `used`
+- [x] Penyewa dapat menyewa lebih dari satu garasi sekaligus
 
 ## 4. Aturan Bisnis (verifikasi manual dengan angka nyata)
 
-- [ ] Sewa harian maksimal = jumlah hari bulan berjalan − 1 (Nov = 29, Feb = 27 / 28 untuk kabisat sesuai kalkulasi)
-- [ ] Sewa bulanan mengikuti jumlah hari bulan saat disewa
-- [ ] Harga bulanan = 25 × harga harian
-- [ ] Garasi Sepeda (`S`) hanya untuk Sepeda / Sepeda Motor
-- [ ] Garasi Mobil (`C`) untuk Mobil Bensin / Mobil Listrik
-- [ ] Garasi Mobil Listrik (`E`) khusus Mobil Listrik
-- [ ] Biaya listrik = kWh kendaraan × harga per kWh (hanya mobil listrik di garasi `E`)
-- [ ] 1 garasi hanya 1 kendaraan; garasi `used` tidak bisa disewa ulang
-- [ ] Garasi kembali `available` setelah masa sewa berakhir (sesuai desain)
+- [x] Sewa harian maksimal = jumlah hari bulan berjalan − 1 (Nov = 29, Feb = 27 / 28 untuk kabisat sesuai kalkulasi)
+- [x] Sewa bulanan mengikuti jumlah hari bulan saat disewa
+- [x] Harga bulanan = 25 × harga harian
+- [x] Garasi Sepeda (`S`) hanya untuk Sepeda / Sepeda Motor
+- [x] Garasi Mobil (`C`) untuk Mobil Bensin / Mobil Listrik
+- [x] Garasi Mobil Listrik (`E`) khusus Mobil Listrik
+- [x] Biaya listrik = kWh kendaraan × harga per kWh (hanya mobil listrik di garasi `E`)
+- [x] 1 garasi hanya 1 kendaraan; garasi `used` tidak bisa disewa ulang
+- [x] Garasi kembali `available` setelah masa sewa berakhir (sesuai desain)
 
 ## 5. Kualitas Kode
 
@@ -85,10 +85,10 @@ Centang `[x]` setelah item diverifikasi. Jangan mengumpulkan sebelum semua item 
 
 ## 6. Unit Testing
 
-- [ ] Test kalkulasi harga (harian, bulanan, listrik)
+- [x] Test kalkulasi harga (harian, bulanan, listrik)
 - [x] Test generate ID garasi (urutan, padding 3 digit, per tipe, batas 999)
-- [ ] Test validasi sewa (maks hari, kompatibilitas kendaraan–garasi, plat wajib)
-- [ ] `php artisan test` hijau seluruhnya
+- [x] Test validasi sewa (maks hari, kompatibilitas kendaraan–garasi, plat wajib)
+- [x] `php artisan test` hijau seluruhnya
 - [x] Contoh test bawaan (`ExampleTest`) dibersihkan atau tetap lolos
 - [ ] Skenario pengujian terdokumentasi (tabel input → hasil diharapkan) di laporan
 

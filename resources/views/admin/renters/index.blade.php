@@ -90,7 +90,7 @@
                             <td class="px-4 py-2">{{ $renter->user->email }}</td>
                             <td class="px-4 py-2">
                                 @if ($renter->status->value === 'APPROVED')
-                                    <span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Diterima</span>
+                                    <x-verified-badge />
                                 @else
                                     <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Ditolak</span>
                                 @endif

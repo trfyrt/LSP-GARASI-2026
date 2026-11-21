@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\RentalType;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,5 +46,23 @@ class Rental extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class, 'id_rental');
+    }
+
+    /** Tanggal mulai sewa (invoice paling awal). */
+    public function startDate(): CarbonImmutable
+    {
+        return CarbonImmutable::parse($this->invoices->min('start_date'))->startOfDay();
+    }
+
+    /** Tanggal selesai sewa saat ini (invoice paling akhir, termasuk perpanjangan). */
+    public function endDate(): CarbonImmutable
+    {
+        return CarbonImmutable::parse($this->invoices->max('end_date'))->startOfDay();
+    }
+
+    /** Total seluruh biaya (sewa awal + perpanjangan). */
+    public function totalFee(): int
+    {
+        return (int) $this->invoices->sum('total_fee');
     }
 }

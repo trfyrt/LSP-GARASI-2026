@@ -26,6 +26,19 @@
                                 class="{{ request()->routeIs('admin.garages.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
                                 Garasi
                             </a>
+                            <a href="{{ route('admin.extensions.index') }}"
+                                class="{{ request()->routeIs('admin.extensions.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
+                                Perpanjang Sewa
+                            </a>
+                        @elseif (auth()->user()->renter?->canRent())
+                            <a href="{{ route('rentals.create') }}"
+                                class="{{ request()->routeIs('rentals.create') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
+                                Sewa Baru
+                            </a>
+                            <a href="{{ route('rentals.index') }}"
+                                class="{{ request()->routeIs('rentals.index') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
+                                Sewa Saya
+                            </a>
                         @endif
                     </nav>
 
