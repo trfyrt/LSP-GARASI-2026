@@ -41,9 +41,13 @@
                         <td class="px-4 py-2">{{ $rental->rental_type === \App\Enums\RentalType::Monthly ? 'Bulanan' : 'Harian' }}</td>
                         <td class="px-4 py-2">{{ $rental->startDate()->format('d/m/Y') }} - {{ $rental->endDate()->format('d/m/Y') }}</td>
                         <td class="px-4 py-2 text-right">Rp {{ number_format($rental->totalFee(), 0, ',', '.') }}</td>
+                        @php
+                            $upcoming = $rental->startDate()->gt($today);
+                            $finished = $rental->endDate()->lt($today);
+                        @endphp
                         <td class="px-4 py-2">
-                            <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $rental->endDate()->gte($today) ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700' }}">
-                                {{ $rental->endDate()->gte($today) ? 'Berjalan' : 'Selesai' }}
+                            <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ $finished ? 'bg-slate-200 text-slate-700' : ($upcoming ? 'bg-sky-100 text-sky-800' : 'bg-slate-900 text-white') }}">
+                                {{ $finished ? 'Selesai' : ($upcoming ? 'Akan datang' : 'Berjalan') }}
                             </span>
                         </td>
                     </tr>

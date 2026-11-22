@@ -4,7 +4,7 @@
 
 @section('content')
     <h1 class="text-2xl font-semibold text-slate-900">Perpanjang Sewa</h1>
-    <p class="mt-1 text-sm text-slate-500">Garasi yang sedang digunakan hari ini. Pilih garasi untuk mengubah tanggal selesai sewa.</p>
+    <p class="mt-1 text-sm text-slate-500">Garasi yang sedang disewa hari ini. Pilih garasi untuk mengubah tanggal selesai sewa.</p>
 
     @if (session('status'))
         <div class="mt-4 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
@@ -24,10 +24,9 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                @forelse ($garages as $garage)
-                    @php $rental = $garage->activeRental; @endphp
+                @forelse ($rentals as $rental)
                     <tr>
-                        <td class="px-4 py-2 font-mono font-medium">{{ $garage->code }}</td>
+                        <td class="px-4 py-2 font-mono font-medium">{{ $rental->garage->code }}</td>
                         <td class="px-4 py-2">{{ $rental->renter->user->name }}</td>
                         <td class="px-4 py-2">
                             {{ $rental->vehicle->brand_model }}

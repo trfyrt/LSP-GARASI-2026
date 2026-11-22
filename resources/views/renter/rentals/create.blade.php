@@ -10,8 +10,8 @@
 
     <h1 class="text-2xl font-semibold text-slate-900">Sewa Garasi Baru</h1>
     <p class="mt-1 text-sm text-slate-500">
-        Tanggal mulai: <span class="font-medium text-slate-700">{{ $today->translatedFormat('d F Y') }}</span> (hari ini).
-        Tanggal selesai dihitung otomatis.
+        Tanggal mulai bawaan adalah hari ini. Anda juga dapat memesan di muka sampai {{ $maxStart->translatedFormat('d F Y') }}.
+        Daftar garasi menampilkan garasi yang kosong selama seluruh periode sewa.
     </p>
 
     @if ($errors->has('rental'))
@@ -65,17 +65,25 @@
             <h2 class="mb-4 font-medium text-slate-900">Detail sewa</h2>
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
+                    <label for="start_date" class="mb-1 block text-sm font-medium">Tanggal mulai</label>
+                    <input id="start_date" name="start_date" type="date" required
+                        min="{{ $today->toDateString() }}" max="{{ $maxStart->toDateString() }}"
+                        value="{{ old('start_date', $today->toDateString()) }}" class="{{ $input }}">
+                    @error('start_date')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
                     <label for="rental_type" class="mb-1 block text-sm font-medium">Tipe sewa</label>
                     <select id="rental_type" name="rental_type" required class="{{ $input }}">
                         <option value="DAILY" @selected(old('rental_type', 'DAILY') === 'DAILY')>Harian</option>
-                        <option value="MONTHLY" @selected(old('rental_type') === 'MONTHLY')>Bulanan ({{ $daysInMonth }} hari)</option>
+                        <option value="MONTHLY" @selected(old('rental_type') === 'MONTHLY')>Bulanan</option>
                     </select>
                     @error('rental_type')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
 
                 <div id="days-field">
-                    <label for="days" class="mb-1 block text-sm font-medium">Jumlah hari (maks. {{ $maxDaily }})</label>
-                    <input id="days" name="days" type="number" min="1" max="{{ $maxDaily }}" value="{{ old('days') }}"
+                    <label for="days" class="mb-1 block text-sm font-medium">Jumlah hari (maks. <span id="max-daily">-</span>)</label>
+                    <input id="days" name="days" type="number" min="1" max="30" value="{{ old('days') }}"
                         class="{{ $input }}">
                     @error('days')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
@@ -86,16 +94,17 @@
                     <p id="garage-type-hint" class="mt-1 text-xs text-slate-500"></p>
                 </div>
 
-                <div>
-                    <label for="id_garage" class="mb-1 block text-sm font-medium">Garasi tersedia</label>
+                <div class="sm:col-span-2">
+                    <label for="id_garage" class="mb-1 block text-sm font-medium">Garasi tersedia pada periode ini</label>
                     <select id="id_garage" name="id_garage" required class="{{ $input }}"></select>
+                    <p id="avail-msg" class="mt-1 text-sm text-red-600"></p>
                     @error('id_garage')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <dl id="summary" class="mt-6 grid max-w-md grid-cols-[10rem_1fr] gap-y-1 rounded-md bg-slate-50 p-4 text-sm">
-                <dt class="text-slate-500">Tanggal selesai</dt>
-                <dd id="sum-end">-</dd>
+                <dt class="text-slate-500">Periode sewa</dt>
+                <dd id="sum-period">-</dd>
                 <dt class="text-slate-500">Biaya sewa</dt>
                 <dd id="sum-rent">-</dd>
                 <dt class="text-slate-500">Biaya isi listrik</dt>
@@ -120,16 +129,20 @@
 
     <script>
         (() => {
-            const garages = @json($garages);
+            const availabilityUrl = @json(route('rentals.availability'));
             const allowed = @json($allowed);
             const typeLabels = @json(collect($garageTypes)->mapWithKeys(fn ($t) => [$t->value => $t->label()]));
-            const daysInMonth = {{ $daysInMonth }};
             const multiplier = {{ $monthlyMultiplier }};
-            const today = new Date({{ $today->year }}, {{ $today->month - 1 }}, {{ $today->day }});
             const oldGarage = @json(old('id_garage'));
+
+            let garages = [];
+            let info = { end_date: null, duration_days: null, days_in_month: 30 };
+            let requestId = 0;
+            let pendingGarage = oldGarage;
 
             const $ = (id) => document.getElementById(id);
             const rupiah = (n) => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+            const fmt = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 
             function fillGarageTypes() {
                 const vehicle = $('vehicle_type').value;
@@ -145,13 +158,16 @@
                 fillGarages();
             }
 
-            function fillGarages(selected) {
+            function fillGarages() {
                 const type = $('garage_type').value;
                 const list = garages.filter((g) => g.type === type);
                 $('id_garage').innerHTML = list.length
                     ? list.map((g) => `<option value="${g.id}">${g.code} - ${rupiah(g.daily_price)}/hari</option>`).join('')
-                    : '<option value="">Tidak ada garasi tersedia</option>';
-                if (selected && list.some((g) => String(g.id) === String(selected))) $('id_garage').value = selected;
+                    : '<option value="">Tidak ada garasi tersedia pada periode ini</option>';
+                if (pendingGarage && list.some((g) => String(g.id) === String(pendingGarage))) {
+                    $('id_garage').value = pendingGarage;
+                    pendingGarage = null;
+                }
                 summarize();
             }
 
@@ -163,38 +179,59 @@
                 fillGarageTypes();
             }
 
+            let timer = null;
+            function refreshAvailability() {
+                clearTimeout(timer);
+                timer = setTimeout(async () => {
+                    const id = ++requestId;
+                    const params = new URLSearchParams({
+                        start_date: $('start_date').value,
+                        rental_type: $('rental_type').value,
+                        days: $('days').value,
+                    });
+                    try {
+                        const response = await fetch(`${availabilityUrl}?${params}`, { headers: { Accept: 'application/json' } });
+                        if (id !== requestId || !response.ok) return;
+                        const data = await response.json();
+                        garages = data.garages || [];
+                        info = data;
+                        if (data.max_daily) $('max-daily').textContent = data.max_daily;
+                        $('days').max = data.max_daily || 30;
+                        $('avail-msg').textContent = data.message || '';
+                        fillGarages();
+                    } catch (e) {
+                        $('avail-msg').textContent = 'Gagal memuat daftar garasi. Muat ulang halaman.';
+                    }
+                }, 250);
+            }
+
             function summarize() {
                 const garage = garages.find((g) => String(g.id) === $('id_garage').value);
                 const monthly = $('rental_type').value === 'MONTHLY';
-                const days = monthly ? daysInMonth : parseInt($('days').value, 10);
-                if (!garage || !days || days < 1) {
-                    ['sum-end', 'sum-rent', 'sum-charging', 'sum-total'].forEach((id) => $(id).textContent = '-');
+                const days = info.duration_days;
+                if (!garage || !days || !info.end_date) {
+                    ['sum-period', 'sum-rent', 'sum-charging', 'sum-total'].forEach((id) => $(id).textContent = '-');
                     return;
                 }
-                const end = new Date(today);
-                end.setDate(end.getDate() + days - 1);
                 const rent = monthly ? multiplier * garage.daily_price : garage.daily_price * days;
                 const kwh = parseFloat($('battery_kwh').value) || 0;
                 const charging = ($('vehicle_type').value === 'EV' && garage.type === 'EV') ? kwh * (garage.charging_price || 0) : 0;
-                $('sum-end').textContent = end.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                $('sum-period').textContent = `${fmt(info.start_date)} - ${fmt(info.end_date)} (${days} hari)`;
                 $('sum-rent').textContent = rupiah(rent);
                 $('sum-charging').textContent = charging ? rupiah(charging) : '-';
                 $('sum-total').textContent = rupiah(rent + charging);
             }
 
             $('vehicle_type').addEventListener('change', toggleFields);
-            $('rental_type').addEventListener('change', toggleFields);
-            $('garage_type').addEventListener('change', () => fillGarages());
-            ['id_garage', 'days', 'battery_kwh'].forEach((id) => $(id).addEventListener('input', summarize));
+            $('rental_type').addEventListener('change', () => { toggleFields(); refreshAvailability(); });
+            $('start_date').addEventListener('change', refreshAvailability);
+            $('days').addEventListener('input', refreshAvailability);
+            $('garage_type').addEventListener('change', fillGarages);
+            $('id_garage').addEventListener('input', summarize);
+            $('battery_kwh').addEventListener('input', summarize);
 
             toggleFields();
-            if (oldGarage) {
-                const g = garages.find((x) => String(x.id) === String(oldGarage));
-                if (g && Array.from($('garage_type').options).some((o) => o.value === g.type)) {
-                    $('garage_type').value = g.type;
-                    fillGarages(oldGarage);
-                }
-            }
+            refreshAvailability();
         })();
     </script>
 @endsection

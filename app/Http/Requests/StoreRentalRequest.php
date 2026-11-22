@@ -31,6 +31,7 @@ class StoreRentalRequest extends FormRequest
             'battery_kwh' => ['nullable', 'numeric', 'min:0.1', 'max:999.99'],
             'rental_type' => ['required', Rule::enum(RentalType::class)],
             'days' => ['nullable', 'integer', 'min:1', 'max:30'],
+            'start_date' => ['nullable', 'date_format:Y-m-d'],
             'id_garage' => ['required', 'integer', 'exists:garage,id'],
             'payment_proof' => ['required', 'file', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
@@ -48,6 +49,7 @@ class StoreRentalRequest extends FormRequest
             'battery_kwh' => 'kapasitas listrik',
             'rental_type' => 'tipe sewa',
             'days' => 'jumlah hari',
+            'start_date' => 'tanggal mulai',
             'id_garage' => 'garasi',
             'payment_proof' => 'bukti pelunasan',
         ];
@@ -67,6 +69,7 @@ class StoreRentalRequest extends FormRequest
             'max' => ':attribute maksimal :max.',
             'exists' => ':attribute tidak ditemukan.',
             'regex' => ':attribute hanya boleh huruf, angka, dan spasi.',
+            'date_format' => ':attribute harus berformat tahun-bulan-tanggal.',
             'image' => ':attribute harus berupa gambar.',
             'mimes' => ':attribute harus berformat JPG atau PNG.',
             'payment_proof.max' => 'Ukuran :attribute maksimal 2 MB.',

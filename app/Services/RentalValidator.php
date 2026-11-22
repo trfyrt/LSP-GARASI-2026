@@ -13,9 +13,30 @@ use Carbon\CarbonInterface;
  */
 class RentalValidator
 {
+    /** Pemesanan paling jauh sekian hari dari hari ini. */
+    public const MAX_ADVANCE_DAYS = 60;
+
     public function __construct(private readonly RentalPriceCalculator $calculator) {}
 
     /**
+     * Tanggal mulai tidak boleh sebelum hari ini dan tidak lebih jauh dari batas pemesanan di muka.
+     *
+     * @throws RentalException jika tanggal mulai di luar rentang yang diizinkan
+     */
+    public function validateStartDate(CarbonInterface $startDate, CarbonInterface $today): void
+    {
+        if ($startDate->copy()->startOfDay()->lt($today->copy()->startOfDay())) {
+            throw new RentalException('Tanggal mulai sewa tidak boleh sebelum hari ini.');
+        }
+
+        if ($startDate->copy()->startOfDay()->gt($today->copy()->startOfDay()->addDays(self::MAX_ADVANCE_DAYS))) {
+            throw new RentalException('Pemesanan paling jauh '.self::MAX_ADVANCE_DAYS.' hari dari hari ini.');
+        }
+    }
+
+    /**
+     * `$startDate` adalah tanggal mulai sewa; batas sewa harian mengikuti bulan tanggal tersebut.
+     *
      * @throws RentalException jika ada aturan yang dilanggar
      */
     public function validate(
@@ -25,7 +46,7 @@ class RentalValidator
         GarageType $garageType,
         RentalType $rentalType,
         ?int $days,
-        CarbonInterface $today,
+        CarbonInterface $startDate,
     ): void {
         if ($vehicleType->requiresPlate() && blank($plateNumber)) {
             throw new RentalException('Nomor plat wajib diisi kecuali untuk Sepeda.');
@@ -40,10 +61,10 @@ class RentalValidator
         }
 
         if ($rentalType === RentalType::Daily) {
-            $max = $this->calculator->maxDailyDays($today);
+            $max = $this->calculator->maxDailyDays($startDate);
 
             if ($days === null || $days < 1 || $days > $max) {
-                throw new RentalException("Sewa harian harus 1 sampai {$max} hari pada bulan ini.");
+                throw new RentalException("Sewa harian harus 1 sampai {$max} hari pada bulan tanggal mulai.");
             }
         }
     }

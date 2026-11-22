@@ -157,4 +157,65 @@ class RentalExtensionTest extends TestCase
 
         $this->assertSame(1, Invoice::count());
     }
+
+    /** Pemesanan lain pada garasi yang sama untuk periode tertentu. */
+    private function otherBooking(Garage $garage, string $start, string $end): Rental
+    {
+        $renter = Renter::factory()->create();
+        $vehicle = $renter->vehicles()->create(['vehicle_type' => 'CAR', 'plate_number' => 'D 1 XX', 'brand_model' => 'Brio']);
+        $rental = Rental::create([
+            'id_renter' => $renter->id, 'id_garage' => $garage->id, 'id_vehicle' => $vehicle->id, 'rental_type' => 'DAILY',
+        ]);
+        Invoice::create([
+            'id_rental' => $rental->id, 'type' => InvoiceType::Initial, 'start_date' => $start, 'end_date' => $end,
+            'duration_days' => 3, 'rent_fee' => 30000, 'charging_fee' => 0, 'total_fee' => 30000, 'payment_proof_path' => 'payment-proofs/b.png',
+        ]);
+
+        return $rental;
+    }
+
+    public function test_perpanjangan_ditolak_jika_menabrak_pemesanan_berikutnya(): void
+    {
+        $rental = $this->activeRental(); // C001: 21-25 Nov
+        $this->otherBooking($rental->garage, '2026-11-28', '2026-11-30');
+
+        $this->actingAs($this->admin())
+            ->post("/admin/extensions/{$rental->id}", [
+                'new_end_date' => '2026-11-29',
+                'payment_proof' => UploadedFile::fake()->image('tambahan.png'),
+            ])
+            ->assertSessionHasErrors(['new_end_date' => 'Garasi sudah dipesan pada sebagian tanggal tersebut. Perpanjangan maksimal sampai 27 November 2026.']);
+
+        $this->assertSame(2, Invoice::count()); // hanya invoice awal kedua sewa
+        $this->assertSame([], Storage::disk('public')->allFiles());
+
+        $this->actingAs($this->admin())
+            ->post("/admin/extensions/{$rental->id}", [
+                'new_end_date' => '2026-11-27',
+                'payment_proof' => UploadedFile::fake()->image('tambahan.png'),
+            ])
+            ->assertRedirect(route('admin.extensions.index'));
+    }
+
+    public function test_form_perpanjangan_menampilkan_batas_pemesanan_berikutnya(): void
+    {
+        $rental = $this->activeRental();
+        $this->otherBooking($rental->garage, '2026-11-28', '2026-11-30');
+
+        $this->actingAs($this->admin())
+            ->get("/admin/extensions/{$rental->id}")
+            ->assertOk()
+            ->assertSee('maksimal sampai 27 November 2026')
+            ->assertSee('max="2026-11-27"', false);
+    }
+
+    public function test_daftar_perpanjangan_admin_hanya_memuat_sewa_yang_mencakup_hari_ini(): void
+    {
+        $this->activeRental(); // C001 berjalan
+        $this->otherBooking(Garage::create(['code' => 'C009', 'type' => GarageType::Car, 'daily_price' => 10000]), '2026-12-01', '2026-12-03');
+
+        $this->actingAs($this->admin())->get('/admin/extensions')->assertOk()
+            ->assertSee('C001')
+            ->assertDontSee('C009');
+    }
 }

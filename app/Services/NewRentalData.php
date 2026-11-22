@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\RentalType;
 use App\Enums\VehicleType;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -20,5 +21,7 @@ final class NewRentalData
         public readonly RentalType $rentalType,
         public readonly ?int $days,
         public readonly UploadedFile $paymentProof,
+        /** Tanggal mulai sewa (hari ini atau di masa depan). */
+        public readonly CarbonImmutable $startDate,
     ) {}
 }

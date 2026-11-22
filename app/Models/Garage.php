@@ -7,7 +7,6 @@ use App\Enums\GarageType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Garasi dengan kode unik per tipe (S###, C###, E###).
@@ -34,12 +33,6 @@ class Garage extends Model
     public function rentals(): HasMany
     {
         return $this->hasMany(Rental::class, 'id_garage');
-    }
-
-    /** Sewa terbaru garasi ini (saat berstatus `used`, itulah sewa yang sedang berjalan). */
-    public function activeRental(): HasOne
-    {
-        return $this->hasOne(Rental::class, 'id_garage')->latestOfMany('id');
     }
 
     public function isAvailable(): bool

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Enums\GarageStatus;
 use App\Enums\InvoiceType;
 use App\Exceptions\RentalException;
+use App\Models\Garage;
 use App\Models\Invoice;
 use App\Models\Rental;
 use Carbon\CarbonInterface;
@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
- * Admin memperpanjang sewa garasi yang sedang `used`: tanggal selesai baru,
- * biaya tambahan otomatis, dan bukti pembayaran tambahan (invoice bertipe extension).
+ * Perpanjangan sewa oleh Admin: tanggal selesai baru, biaya tambahan
+ * otomatis, dan bukti pembayaran. Disimpan sebagai invoice bertipe extension pada rental yang sama.
  */
 class RentalExtensionService
 {
@@ -35,7 +35,8 @@ class RentalExtensionService
     }
 
     /**
-     * @throws RentalException jika sewa sudah berakhir atau tanggal baru tidak melewati tanggal selesai saat ini
+     * @throws RentalException jika sewa sudah berakhir, tanggal baru tidak melewati tanggal selesai saat ini,
+     *                         atau garasi sudah dipesan pada sebagian tanggal perpanjangan
      */
     public function extend(Rental $rental, CarbonInterface $newEnd, UploadedFile $proof, CarbonInterface $today): Invoice
     {
@@ -43,24 +44,36 @@ class RentalExtensionService
 
         try {
             return DB::transaction(function () use ($rental, $newEnd, $proof, $today, &$path): Invoice {
-                $this->availability->releaseExpired($today);
+                $rental = Rental::whereKey($rental->id)->with(['garage', 'invoices'])->lockForUpdate()->firstOrFail();
 
-                $rental = Rental::whereKey($rental->id)->with('garage')->lockForUpdate()->firstOrFail();
+                // Kunci garasi agar tidak bersamaan dengan pemesanan baru pada garasi yang sama.
+                Garage::whereKey($rental->id_garage)->lockForUpdate()->first();
 
-                if ($rental->garage->status !== GarageStatus::Used || $rental->endDate()->lt($today)) {
+                $currentEnd = $rental->endDate();
+
+                if ($currentEnd->lt($today)) {
                     throw new RentalException('Sewa ini sudah berakhir dan tidak dapat diperpanjang.');
                 }
 
-                $currentEnd = $rental->endDate();
                 $extraDays = $this->extraDays($rental, $newEnd);
+
+                if (! $this->availability->isFree($rental->id_garage, $currentEnd->addDay(), $newEnd)) {
+                    $next = $this->availability->nextBookingStart($rental->id_garage, $currentEnd);
+                    $limit = $next?->subDay()->translatedFormat('d F Y');
+
+                    throw new RentalException(
+                        'Garasi sudah dipesan pada sebagian tanggal tersebut.'.($limit ? " Perpanjangan maksimal sampai {$limit}." : ''),
+                    );
+                }
+
                 $fee = $this->calculator->extensionFee($rental->garage->daily_price, $extraDays);
 
                 $path = $proof->store('payment-proofs', 'public');
 
-                return Invoice::create([
+                $invoice = Invoice::create([
                     'id_rental' => $rental->id,
                     'type' => InvoiceType::Extension,
-                    'start_date' => $currentEnd->copy()->addDay()->toDateString(),
+                    'start_date' => $currentEnd->addDay()->toDateString(),
                     'end_date' => $newEnd->toDateString(),
                     'duration_days' => $extraDays,
                     'rent_fee' => $fee,
@@ -68,6 +81,10 @@ class RentalExtensionService
                     'total_fee' => $fee,
                     'payment_proof_path' => $path,
                 ]);
+
+                $this->availability->syncStatuses($today);
+
+                return $invoice;
             });
         } catch (Throwable $e) {
             if ($path !== null) {

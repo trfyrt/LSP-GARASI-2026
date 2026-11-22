@@ -7,7 +7,9 @@ use App\Enums\GarageType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGarageBatchRequest;
 use App\Models\Garage;
+use App\Services\GarageAvailability;
 use App\Services\GarageBatchService;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,8 +20,10 @@ use Illuminate\Http\Request;
 class GarageController extends Controller
 {
     /** Daftar garasi (bisa difilter per tipe) beserta form pembuatan batch. */
-    public function index(Request $request): View
+    public function index(Request $request, GarageAvailability $availability): View
     {
+        $availability->syncStatuses(CarbonImmutable::now()->startOfDay());
+
         $filter = GarageType::tryFrom((string) $request->query('type'));
 
         $garages = Garage::query()

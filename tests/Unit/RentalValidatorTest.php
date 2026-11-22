@@ -149,4 +149,46 @@ class RentalValidatorTest extends TestCase
         $this->check(VehicleType::Bike, null, null, GarageType::Bike, RentalType::Daily, 27);
         $this->assertRejected(fn () => $this->check(VehicleType::Bike, null, null, GarageType::Bike, RentalType::Daily, 28), '1 sampai 27');
     }
+
+    public function test_tanggal_mulai_hari_ini_dan_besok_diterima(): void
+    {
+        $this->validator->validateStartDate($this->today, $this->today);
+        $this->validator->validateStartDate($this->today->addDay(), $this->today);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_tanggal_mulai_kemarin_ditolak(): void
+    {
+        $this->assertRejected(fn () => $this->validator->validateStartDate($this->today->subDay(), $this->today), 'sebelum hari ini');
+        $this->assertRejected(fn () => $this->validator->validateStartDate($this->today->subYear(), $this->today), 'sebelum hari ini');
+    }
+
+    public function test_batas_pemesanan_di_muka_enam_puluh_hari(): void
+    {
+        $this->validator->validateStartDate($this->today->addDays(RentalValidator::MAX_ADVANCE_DAYS), $this->today);
+        $this->assertRejected(
+            fn () => $this->validator->validateStartDate($this->today->addDays(RentalValidator::MAX_ADVANCE_DAYS + 1), $this->today),
+            'paling jauh 60 hari',
+        );
+    }
+
+    public function test_jam_pada_tanggal_mulai_diabaikan(): void
+    {
+        $this->validator->validateStartDate($this->today->setTime(23, 59), $this->today->setTime(8, 0));
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_batas_hari_harian_memakai_bulan_tanggal_mulai_bukan_hari_ini(): void
+    {
+        // Hari ini November (maks 29), tetapi tanggal mulai Desember (maks 30).
+        $december = CarbonImmutable::parse('2026-12-01');
+
+        $this->validator->validate(VehicleType::Bike, null, null, GarageType::Bike, RentalType::Daily, 30, $december);
+        $this->assertRejected(
+            fn () => $this->validator->validate(VehicleType::Bike, null, null, GarageType::Bike, RentalType::Daily, 30, $this->today),
+            '1 sampai 29',
+        );
+    }
 }

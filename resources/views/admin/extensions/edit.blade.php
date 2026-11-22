@@ -29,7 +29,15 @@
         <div>
             <label for="new_end_date" class="mb-1 block text-sm font-medium">Tanggal selesai baru</label>
             <input id="new_end_date" name="new_end_date" type="date" required
-                min="{{ $endDate->addDay()->toDateString() }}" value="{{ old('new_end_date') }}" class="{{ $input }}">
+                min="{{ $endDate->addDay()->toDateString() }}"
+                @if ($nextBooking) max="{{ $nextBooking->subDay()->toDateString() }}" @endif
+                value="{{ old('new_end_date') }}" class="{{ $input }}">
+            @if ($nextBooking)
+                <p class="mt-1 text-xs text-slate-500">
+                    Garasi sudah dipesan mulai {{ $nextBooking->translatedFormat('d F Y') }},
+                    sehingga perpanjangan maksimal sampai {{ $nextBooking->subDay()->translatedFormat('d F Y') }}.
+                </p>
+            @endif
             @error('new_end_date')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
         </div>
 

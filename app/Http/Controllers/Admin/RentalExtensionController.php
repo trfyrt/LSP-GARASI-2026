@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\GarageStatus;
 use App\Exceptions\RentalException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExtendRentalRequest;
-use App\Models\Garage;
 use App\Models\Rental;
 use App\Services\GarageAvailability;
 use App\Services\RentalExtensionService;
@@ -15,35 +13,39 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
 /**
- * Admin memperpanjang sewa garasi yang sedang digunakan hari ini.
+ * Admin memperpanjang sewa garasi yang sedang berjalan hari ini.
  */
 class RentalExtensionController extends Controller
 {
-    /** Daftar garasi `used` hari ini beserta penyewa dan tanggal selesainya. */
+    /** Daftar sewa yang periodenya mencakup hari ini (garasi yang sedang disewa), urut kode garasi. */
     public function index(GarageAvailability $availability): View
     {
-        $availability->releaseExpired(now()->startOfDay());
+        $today = CarbonImmutable::now()->startOfDay();
+        $availability->syncStatuses($today);
 
-        $garages = Garage::where('status', GarageStatus::Used)
-            ->with(['activeRental.renter.user', 'activeRental.vehicle', 'activeRental.invoices'])
-            ->orderBy('code')
+        $rentals = Rental::query()
+            ->whereHas('invoices', fn ($query) => $query
+                ->whereDate('start_date', '<=', $today->toDateString())
+                ->whereDate('end_date', '>=', $today->toDateString()))
+            ->with(['garage', 'renter.user', 'vehicle', 'invoices'])
             ->get()
-            ->filter(fn (Garage $garage): bool => $garage->activeRental !== null);
+            ->sortBy(fn (Rental $rental) => $rental->garage->code)
+            ->values();
 
-        return view('admin.extensions.index', ['garages' => $garages]);
+        return view('admin.extensions.index', ['rentals' => $rentals]);
     }
 
     /** Form perpanjangan satu sewa. */
-    public function edit(Rental $rental): View
+    public function edit(Rental $rental, GarageAvailability $availability): View
     {
         $rental->load(['garage', 'renter.user', 'vehicle', 'invoices']);
 
-        abort_unless(
-            $rental->garage->status === GarageStatus::Used && $rental->endDate()->gte(now()->startOfDay()),
-            404,
-        );
+        abort_unless($rental->endDate()->gte(CarbonImmutable::now()->startOfDay()), 404);
 
-        return view('admin.extensions.edit', ['rental' => $rental]);
+        return view('admin.extensions.edit', [
+            'rental' => $rental,
+            'nextBooking' => $availability->nextBookingStart($rental->id_garage, $rental->endDate()),
+        ]);
     }
 
     /** Simpan perpanjangan: invoice baru bertipe extension. */
@@ -54,9 +56,9 @@ class RentalExtensionController extends Controller
         try {
             $invoice = $service->extend(
                 $rental,
-                CarbonImmutable::createFromFormat('Y-m-d', $request->validated('new_end_date'))->startOfDay(),
+                CarbonImmutable::createFromFormat('!Y-m-d', $request->validated('new_end_date')),
                 $request->file('payment_proof'),
-                now()->startOfDay(),
+                CarbonImmutable::now()->startOfDay(),
             );
         } catch (RentalException $e) {
             return back()->withInput()->withErrors(['new_end_date' => $e->getMessage()]);

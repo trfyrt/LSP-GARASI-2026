@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('renter')->group(function () {
         Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
         Route::get('/rentals/create', [RentalController::class, 'create'])->name('rentals.create');
+        Route::get('/rentals/availability', [RentalController::class, 'availability'])->name('rentals.availability');
         Route::post('/rentals', [RentalController::class, 'store'])->name('rentals.store');
     });
 });
