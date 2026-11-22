@@ -66,4 +66,7 @@ Thumbs.db
 Desktop.ini
 ehthumbs.db
 
-/docs/
+/docs/*
+!/docs/diagram/
+/docs/diagram/*
+!/docs/diagram/*.png
