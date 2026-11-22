@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\GarageController;
 use App\Http\Controllers\Admin\RentalExtensionController;
 use App\Http\Controllers\Admin\RenterVerificationController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/garages', [GarageController::class, 'index'])->name('garages.index');
         Route::post('/garages', [GarageController::class, 'store'])->name('garages.store');
+
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
         Route::get('/extensions', [RentalExtensionController::class, 'index'])->name('extensions.index');
         Route::get('/extensions/{rental}', [RentalExtensionController::class, 'edit'])->name('extensions.edit');

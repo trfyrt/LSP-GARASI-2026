@@ -30,6 +30,10 @@
                                 class="{{ request()->routeIs('admin.extensions.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
                                 Perpanjang Sewa
                             </a>
+                            <a href="{{ route('admin.reports.index') }}"
+                                class="{{ request()->routeIs('admin.reports.*') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">
+                                Laporan
+                            </a>
                         @elseif (auth()->user()->renter?->canRent())
                             <a href="{{ route('rentals.create') }}"
                                 class="{{ request()->routeIs('rentals.create') ? 'font-medium text-slate-900' : 'text-slate-600 hover:text-slate-900' }}">

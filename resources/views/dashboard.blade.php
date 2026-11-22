@@ -23,9 +23,11 @@
                 <span class="font-medium text-slate-800">Perpanjang Sewa</span>
                 <span class="text-xs text-slate-500">Garasi yang sedang digunakan</span>
             </a>
-            <p class="mt-3 text-sm text-slate-500">
-                Menu laporan akan tersedia di tahap berikutnya.
-            </p>
+            <a href="{{ route('admin.reports.index') }}"
+                class="mt-2 flex items-center justify-between rounded-md border border-slate-200 px-4 py-3 text-sm hover:bg-slate-50">
+                <span class="font-medium text-slate-800">Laporan</span>
+                <span class="text-xs text-slate-500">Rekap per bulan, hari, tipe, penyewa</span>
+            </a>
         </div>
     @else
         @php

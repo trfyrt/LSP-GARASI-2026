@@ -1,12 +1,11 @@
 # LSP-2026 — Sistem Penyewaan Garasi Kendaraan
 
-Aplikasi web manajemen penyewaan garasi (sepeda/motor, mobil bensin, mobil listrik) untuk uji kompetensi Pemrogram.
-PRD: [`docs/product_requirements_document_sistem_penyewaan_garasi.md`](docs/product_requirements_document_sistem_penyewaan_garasi.md)
+Aplikasi web untuk mengelola penyewaan garasi sepeda/motor, mobil bensin, dan mobil listrik.
 
-## Stack
-- PHP 8.3 + Laravel
-- MySQL 8
-- Diagram: PlantUML (`docs/diagram/`)
+- **Admin:** membuat garasi batch, memverifikasi pendaftar, memperpanjang sewa, melihat laporan.
+- **Penyewa:** mendaftar, menyewa garasi sesuai kendaraan, dan mengunggah bukti pembayaran.
+
+Stack: PHP 8.3, Laravel, MySQL 8, Blade + Tailwind CSS.
 
 ## Setup
 ```bash
@@ -15,39 +14,14 @@ cp .env.example .env        # sesuaikan DB_* bila perlu
 php artisan key:generate
 # buat database: CREATE DATABASE garasi_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 php artisan migrate --seed
-php artisan storage:link      # agar bukti pembayaran dapat diakses
-npm install && npm run build   # aset Tailwind/Vite
+php artisan storage:link
+npm install && npm run build
 php artisan serve
 ```
 Aplikasi berjalan di http://127.0.0.1:8000.
-Akun admin awal: `admin@garage.test` / `12345678` (ganti setelah login pertama).
+Akun admin: `admin@garage.test` / `12345678`.
 
-## Struktur
-| Path | Isi |
-|---|---|
-| `app/Enums` | Enum tipe/status (UserRole, RenterStatus, GarageType, VehicleType, InvoiceType, dst.) |
-| `app/Models` | User, Renter, Garage, Vehicle, Rental, Invoice |
-| `app/Services` | Logika bisnis: `RenterRegistrationService`, `GarageIdGenerator`, `GarageBatchService`. `RentalPriceCalculator`, `RentalValidator`, `RentalService`, `RentalExtensionService`, `GarageAvailability` |
-| `database/migrations` | Skema tabel sesuai ERD V2 (`user`, `renter`, `garage`, `vehicle`, `rental`, `invoice`) |
-| `docs/diagram` | Use Case Diagram, ERD V2 (PNG), dan `class.puml` |
-| `docs/checklist_kesiapan_pengumpulan.md` | Checklist kesiapan pengumpulan |
-
-## Skema Basis Data (ringkas)
-- `user` — akun login (Admin/Penyewa). Admin hanya punya baris di tabel ini.
-- `renter` — profil penyewa (NIK, telepon, status verifikasi), relasi 1:1 ke `user`.
-- `garage` — garasi (kode `S###`/`C###`/`E###`, harga harian, harga isi listrik).
-- `vehicle` — kendaraan milik penyewa.
-- `rental` — kontrak sewa yang menghubungkan penyewa, garasi, dan kendaraan.
-- `invoice` — tagihan per periode (tanggal, biaya, bukti bayar). Perpanjangan = invoice baru bertipe `extension` untuk garasi yang sama.
-
-## Progres
-- [x] Checkpoint 1 — Perancangan sistem & basis data
-- [x] Checkpoint 2 — Login, registrasi, verifikasi pendaftar, pembuatan garasi batch
-  - [x] Registrasi penyewa (status awal Pending) dan login/logout
-  - [x] Verifikasi pendaftar oleh Admin (terima/tolak, hanya Admin)
-  - [x] Pembuatan garasi batch (ID otomatis `S001`/`C001`/`E001`, maks. 999 per tipe)
-- [x] Checkpoint 3 — Sewa baru dan perpanjangan sewa
-  - [x] Sewa baru oleh penyewa (filter kendaraan–garasi, biaya harian/bulanan + listrik, bukti bayar, garasi menjadi `used`)
-  - [x] Perpanjangan sewa oleh Admin (tanggal selesai baru, sisa biaya otomatis, bukti bayar tambahan)
-- [ ] Checkpoint 4 — Laporan, unit testing, dokumentasi
-- [ ] Checkpoint 5 — Final review dan persiapan demo
+## Pengujian
+```bash
+php artisan test
+```
