@@ -1,4 +1,4 @@
-# LSP-2026 — Sistem Penyewaan Garasi Kendaraan
+# LSP-2026 - Garage Management System
 
 Aplikasi web untuk mengelola penyewaan garasi sepeda/motor, mobil bensin, dan mobil listrik.
 
