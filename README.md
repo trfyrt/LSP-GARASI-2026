@@ -25,3 +25,5 @@ Akun admin: `admin@garage.test` / `12345678`.
 ```bash
 php artisan test
 ```
+
+Versi zoom ini memungkinkan untuk book in advance sesuai dengan pembahasan pada zoom 21 November 2026
