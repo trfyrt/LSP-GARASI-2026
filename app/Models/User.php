@@ -50,6 +50,7 @@ class User extends Authenticatable
         return $this->hasOne(Renter::class, 'id_user');
     }
 
+    /** Apakah pengguna berperan Admin. */
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;

@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
  */
 class ReportController extends Controller
 {
+    /** Tampilkan laporan penyewaan sesuai filter tahun, bulan, tipe garasi, dan penyewa. */
     public function index(ReportFilterRequest $request, RentalReportService $reports): View
     {
         $today = CarbonImmutable::now()->startOfDay();

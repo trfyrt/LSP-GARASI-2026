@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
  */
 class DashboardController extends Controller
 {
+    /** Tampilkan dashboard sesuai peran (Admin atau Penyewa) dan status verifikasi. */
     public function __invoke(Request $request): View
     {
         $user = $request->user();

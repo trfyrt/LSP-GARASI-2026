@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
  */
 class ReportFilterRequest extends FormRequest
 {
+    /** Hanya Admin yang boleh melihat laporan. */
     public function authorize(): bool
     {
         return $this->user()?->isAdmin() ?? false;

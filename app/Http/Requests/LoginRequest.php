@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class LoginRequest extends FormRequest
 {
+    /** Form login terbuka untuk semua pengunjung. */
     public function authorize(): bool
     {
         return true;

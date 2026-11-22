@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsureUserIsRenter
 {
+    /** Lanjutkan permintaan hanya jika pengguna memiliki profil penyewa; selain itu respons 403. */
     public function handle(Request $request, Closure $next): Response
     {
         abort_unless($request->user()?->renter !== null, 403, 'Halaman ini hanya untuk Penyewa.');

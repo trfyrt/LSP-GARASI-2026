@@ -20,6 +20,11 @@ class Invoice extends Model
 
     public $timestamps = false;
 
+    /**
+     * Jenis invoice dibaca sebagai enum, tanggal mulai dan selesai sebagai objek tanggal (Carbon).
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -29,6 +34,7 @@ class Invoice extends Model
         ];
     }
 
+    /** Sewa (rental) pemilik invoice ini. */
     public function rental(): BelongsTo
     {
         return $this->belongsTo(Rental::class, 'id_rental');

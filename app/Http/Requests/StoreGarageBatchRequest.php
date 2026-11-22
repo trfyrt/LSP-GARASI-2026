@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
  */
 class StoreGarageBatchRequest extends FormRequest
 {
+    /** Hanya Admin yang boleh membuat garasi batch. */
     public function authorize(): bool
     {
         return $this->user()?->isAdmin() ?? false;

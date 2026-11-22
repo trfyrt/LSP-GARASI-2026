@@ -22,6 +22,11 @@ class Garage extends Model
     /** Garasi baru selalu berstatus tersedia. */
     protected $attributes = ['status' => 'AVAILABLE'];
 
+    /**
+     * Tipe dan status garasi dibaca sebagai enum.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -42,6 +47,7 @@ class Garage extends Model
         return $this->hasOne(Rental::class, 'id_garage')->latestOfMany('id');
     }
 
+    /** Apakah garasi berstatus tersedia (AVAILABLE). */
     public function isAvailable(): bool
     {
         return $this->status === GarageStatus::Available;

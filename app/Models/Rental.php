@@ -20,6 +20,11 @@ class Rental extends Model
 
     public $timestamps = false;
 
+    /**
+     * Tipe sewa (harian atau bulanan) dibaca sebagai enum.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -27,16 +32,19 @@ class Rental extends Model
         ];
     }
 
+    /** Penyewa yang melakukan sewa ini. */
     public function renter(): BelongsTo
     {
         return $this->belongsTo(Renter::class, 'id_renter');
     }
 
+    /** Garasi yang disewa. */
     public function garage(): BelongsTo
     {
         return $this->belongsTo(Garage::class, 'id_garage');
     }
 
+    /** Kendaraan yang ditempatkan pada garasi. */
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class, 'id_vehicle');

@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
  */
 class StoreRentalRequest extends FormRequest
 {
+    /** Hanya penyewa yang sudah diverifikasi (Approved) yang boleh menyewa. */
     public function authorize(): bool
     {
         return $this->user()?->renter?->canRent() ?? false;

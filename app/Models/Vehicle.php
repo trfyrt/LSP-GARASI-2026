@@ -19,6 +19,11 @@ class Vehicle extends Model
 
     public $timestamps = false;
 
+    /**
+     * Tipe kendaraan dibaca sebagai enum, kapasitas baterai sebagai desimal dua angka di belakang koma.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -27,11 +32,13 @@ class Vehicle extends Model
         ];
     }
 
+    /** Penyewa pemilik kendaraan ini. */
     public function renter(): BelongsTo
     {
         return $this->belongsTo(Renter::class, 'id_renter');
     }
 
+    /** Riwayat sewa yang memakai kendaraan ini. */
     public function rentals(): HasMany
     {
         return $this->hasMany(Rental::class, 'id_vehicle');

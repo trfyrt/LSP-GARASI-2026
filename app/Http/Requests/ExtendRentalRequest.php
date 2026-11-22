@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class ExtendRentalRequest extends FormRequest
 {
+    /** Hanya Admin yang boleh memperpanjang sewa. */
     public function authorize(): bool
     {
         return $this->user()?->isAdmin() ?? false;

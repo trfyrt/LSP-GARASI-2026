@@ -26,6 +26,11 @@ class Renter extends Model
     /** Default sama dengan default kolom di database. */
     protected $attributes = ['status' => 'PENDING'];
 
+    /**
+     * Status verifikasi penyewa dibaca sebagai enum.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -33,6 +38,7 @@ class Renter extends Model
         ];
     }
 
+    /** Akun login (user) pemilik profil penyewa ini. */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user');

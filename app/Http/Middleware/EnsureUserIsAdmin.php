@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsureUserIsAdmin
 {
+    /** Lanjutkan permintaan hanya jika pengguna berperan Admin; selain itu respons 403. */
     public function handle(Request $request, Closure $next): Response
     {
         abort_unless($request->user()?->isAdmin(), 403, 'Halaman ini hanya untuk Admin.');
